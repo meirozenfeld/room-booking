@@ -42,6 +42,8 @@ src/
 ├─ domain/         # Domain concepts (reserved for later phases)
 ├─ app.ts          # Express app configuration
 └─ server.ts       # Server bootstrap
+```
+
 This structure follows clean architecture principles and allows the project to scale
 without premature over-engineering.
 

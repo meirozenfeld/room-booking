@@ -20,13 +20,55 @@ development practices rather than a toy implementation.
 
 ## 🧱 Architecture Overview
 
-- **Backend**: Node.js + Express + TypeScript  
+- **Backend**: Node.js + Express + TypeScript
+- **Frontend**: React + TypeScript (client-side rendered)    
 - **Database**: PostgreSQL (via Prisma ORM)  
 - **Authentication**: JWT (Access + Refresh Tokens)  
 - **Security**: Password hashing, rate limiting, role-based access control  
 - **DevOps**: Docker (local), environment-based configuration  
 
 High-level architecture and diagrams are available under `/docs`.
+
+---
+
+## 🧰 Core Tooling & Technical Decisions
+
+The project intentionally relies on a focused set of well-established tools,
+each selected to support correctness, safety, and operational clarity.
+
+- **Prisma ORM**
+  - Type-safe database access
+  - Explicit transaction boundaries
+  - Schema-driven migrations
+
+- **Zod**
+  - Runtime request validation at API boundaries
+  - Prevents invalid input from reaching the service layer
+
+- **express-async-errors**
+  - Enables centralized async error handling
+  - Eliminates repetitive try/catch blocks in route handlers
+
+- **Pino**
+  - Structured JSON logging
+  - Correlation-friendly and production-ready
+  - Low-overhead logging for high-throughput scenarios
+
+- **bcrypt**
+  - Secure password hashing
+  - No plain-text credential storage
+
+- **Helmet**
+  - Secure HTTP headers
+  - Baseline protection against common web vulnerabilities
+
+- **CORS**
+  - Explicitly restricted origin configuration
+  - Prevents unintended cross-origin access
+
+- **dotenv**
+  - Environment-based configuration
+  - Clear separation between code and secrets
 
 ---
 
@@ -42,6 +84,21 @@ src/
 ├─ domain/         # Domain concepts (reserved for later phases)
 ├─ app.ts          # Express app configuration
 └─ server.ts       # Server bootstrap
+```
+
+## 📁 Project Structure (Frontend)
+
+```text
+src/
+├─ api/            # API client wrappers
+├─ components/     # Reusable UI components
+├─ pages/          # Route-level components
+├─ hooks/          # Custom React hooks
+├─ auth/           # Authentication guards & helpers
+├─ types/          # Shared TypeScript types
+├─ utils/          # Utility functions
+├─ App.tsx         # Root application component
+└─ main.tsx        # Application bootstrap
 ```
 
 This structure follows clean architecture principles and allows the project to scale

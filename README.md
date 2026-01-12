@@ -32,16 +32,17 @@ High-level architecture and diagrams are available under `/docs`.
 
 ## 📁 Project Structure (Backend)
 
+```text
 src/
-├─ api/ # HTTP layer (routes, controllers, schemas)
-├─ services/ # Business logic
-├─ repositories/ # Data access (Prisma)
-├─ infra/ # Cross-cutting concerns (auth, logging, rate-limit, etc.)
-├─ config/ # Environment & configuration
-├─ domain/ # Domain concepts (reserved for later phases)
-├─ app.ts # Express app configuration
-└─ server.ts # Server bootstrap
-
+├─ api/            # HTTP layer (routes, controllers, schemas)
+├─ services/       # Business logic
+├─ repositories/   # Data access (Prisma)
+├─ infra/          # Cross-cutting concerns (auth, logging, rate-limit, etc.)
+├─ config/         # Environment & configuration
+├─ domain/         # Domain concepts (reserved for later phases)
+├─ app.ts          # Express app configuration
+└─ server.ts       # Server bootstrap
+```
 
 This structure follows clean architecture principles and allows the project to scale
 without premature over-engineering.

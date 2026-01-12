@@ -1,0 +1,293 @@
+# Room Booking Platform
+
+A production-oriented Room Booking system designed to demonstrate clean backend architecture,
+secure authentication, and scalability-aware design decisions.
+
+This project is built as a step-by-step engineering exercise, following real-world backend
+development practices rather than a toy implementation.
+
+---
+
+## 🎯 Project Goals
+
+- Design a realistic booking system with strong consistency guarantees
+- Apply clean architecture and separation of concerns
+- Implement secure, production-grade authentication
+- Demonstrate scalability, security, and observability considerations
+- Remain free-tier friendly and easy to run locally
+
+---
+
+## 🧱 Architecture Overview
+
+- **Backend**: Node.js + Express + TypeScript  
+- **Database**: PostgreSQL (via Prisma ORM)  
+- **Authentication**: JWT (Access + Refresh Tokens)  
+- **Security**: Password hashing, rate limiting, role-based access control  
+- **DevOps**: Docker (local), environment-based configuration  
+
+High-level architecture and diagrams are available under `/docs`.
+
+---
+
+## 📁 Project Structure (Backend)
+
+src/
+├─ api/ # HTTP layer (routes, controllers, schemas)
+├─ services/ # Business logic
+├─ repositories/ # Data access (Prisma)
+├─ infra/ # Cross-cutting concerns (auth, logging, rate-limit, etc.)
+├─ config/ # Environment & configuration
+├─ domain/ # Domain concepts (reserved for later phases)
+├─ app.ts # Express app configuration
+└─ server.ts # Server bootstrap
+
+
+This structure follows clean architecture principles and allows the project to scale
+without premature over-engineering.
+
+---
+
+## 🔐 Authentication & Security
+
+The system uses a secure, production-oriented authentication model:
+
+- **JWT Access Tokens**
+  - Short-lived
+  - Stateless
+  - Used for request authentication
+
+- **Refresh Tokens**
+  - Long-lived
+  - Stored in the database
+  - Support server-side revocation
+  - Rotated on every refresh
+
+- **Password Security**
+  - Passwords are hashed using `bcrypt`
+  - Plain-text passwords are never stored
+
+- **Authorization**
+  - Role-based access control (`USER`, `ADMIN`)
+  - Protected routes via middleware
+
+- **Additional Protections**
+  - Rate limiting on authentication endpoints
+  - Security headers via Helmet
+  - Restricted CORS configuration
+
+---
+
+## 🧪 API Overview (Current)
+
+### Authentication
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
+
+### User
+- `GET /api/users/me` (authenticated)
+
+### Admin
+- `GET /api/admin/users` (ADMIN only)
+
+### Rooms
+- `GET /api/rooms/search` (read-heavy, paginated)
+
+### Bookings
+- `POST /bookings` (authenticated, concurrency-safe)
+- `PATCH /bookings/:id/cancel` (owner or ADMIN)
+
+---
+
+## 🖥️ Frontend – User Flows & Consistency
+
+The frontend is implemented using **React + TypeScript** and focuses on correctness,
+clarity, and alignment with backend consistency guarantees.
+
+### Key Characteristics
+
+- Token-based authentication using JWT access tokens
+- Protected routes with explicit authentication guards
+- Stateless room search (read-heavy)
+- Explicit booking confirmation to avoid accidental writes
+- No optimistic UI for booking operations
+- Explicit handling of booking conflicts (HTTP 409)
+
+The frontend intentionally avoids complex state management or heavy UI frameworks,
+keeping the focus on system behavior rather than presentation.
+
+---
+
+## 🗄️ Database Schema
+
+Core entities:
+- `users`
+- `rooms`
+- `bookings`
+- `room_availability`
+- `refresh_tokens`
+- `audit_events` (used for booking audit trail)
+
+Booking creation is intentionally treated as a consistency-sensitive operation.
+
+The system does not rely on optimistic UI updates. Instead, booking requests are
+confirmed explicitly by the user and validated atomically on the backend.
+Concurrency conflicts are returned as HTTP 409 responses and surfaced clearly
+to the user interface.
+
+The schema is designed to support concurrency-safe bookings and auditing.
+ER diagrams are available under `/docs`.
+
+Bookings follow a simple lifecycle model (CONFIRMED → CANCELLED).
+Intermediate states such as PENDING are intentionally reserved for future extensions.
+
+---
+
+## 🔍 Room Search
+
+Room search is implemented as a read-optimized, eventually consistent flow.
+
+- Availability is computed dynamically at query time
+- Filtering is performed at the database level
+- Pagination and sorting are supported
+- No locks or cache are used at this stage
+
+Strong consistency guarantees are enforced during booking creation
+via transactional logic and database-level locking.
+
+The booking lifecycle and state model are documented under
+`/docs/decisions/booking-lifecycle.md`.
+
+Design rationale is documented under `/docs/decisions/room-search.md`.
+
+---
+
+## 🔍 Observability & Operational Excellence
+
+The system is designed with production-grade observability, enabling deep visibility
+into both technical behavior and business-critical flows.
+
+### Metrics (Prometheus-Compatible)
+
+The backend exposes a `/metrics` endpoint compatible with Prometheus.
+
+Collected metrics include:
+- **HTTP request count** (`http_requests_total`)  
+  Labeled by HTTP method, normalized route, and status code.
+- **HTTP request latency** (`http_request_duration_seconds`)  
+  Histogram-based latency tracking with predefined buckets.
+- **Application error count** (`http_errors_total`)  
+  Captures both client (4xx) and server (5xx) errors.
+- **Default Node.js runtime metrics**  
+  CPU usage, memory consumption, and event-loop health.
+
+To ensure production safety, dynamic or unknown routes are intentionally normalized
+to avoid high-cardinality metric labels.
+
+### Structured Logging
+
+The application uses structured JSON logging via **Pino**.
+
+Each request log includes:
+- HTTP method and path
+- Response status code
+- Request duration
+- A unique correlation ID (`requestId`) propagated across the request lifecycle
+
+This enables reliable request tracing and seamless integration with centralized
+log aggregation systems (e.g. ELK, Datadog).
+
+### Business Audit Logs (Bookings)
+
+In addition to technical logs, the system emits **business-level audit logs**
+for all critical booking operations.
+
+Logged booking events include:
+- Booking attempt
+- Booking creation
+- Booking cancellation
+
+Each audit log entry contains:
+- Event type
+- Booking ID
+- Room ID
+- User ID
+- Booking status
+- Correlated request ID
+
+Audit logs are emitted at the **service layer**, ensuring clear separation
+from HTTP concerns and full visibility into domain behavior.
+
+### Database Audit Trail
+
+Booking creation and cancellation events are also persisted in the database
+via the `audit_events` table, providing a durable audit trail for
+post-incident analysis and compliance needs.
+
+---
+
+
+## 🚀 Getting Started (Local)
+
+### Prerequisites
+- Node.js 18+
+- Docker & Docker Compose
+- PostgreSQL (or Dockerized)
+
+---
+
+### Environment Configuration
+
+The application expects the following environment variables:
+
+- `PORT`
+- `NODE_ENV`
+- `DATABASE_URL`
+- `JWT_ACCESS_SECRET`
+- `JWT_REFRESH_SECRET`
+- `JWT_ACCESS_EXPIRES_IN`
+- `JWT_REFRESH_EXPIRES_IN`
+- `CORS_ORIGIN`
+
+See `.env.example` for a local development template.
+
+---
+
+## Install & Run
+npm install
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
+
+---
+
+## 📌 Design Philosophy
+
+This project intentionally prioritizes:
+
+- Correctness over premature optimization
+
+- Explicit decisions over magic abstractions
+
+- Production realism over academic purity
+
+- Advanced features (caching, concurrency control, observability, deployment)
+  are introduced gradually in later phases.
+
+- Simple, explicit domain models over unused intermediate states
+
+---
+
+## 📚 Documentation
+
+Detailed diagrams, sequence flows, and design notes are available under:
+/docs
+
+---
+
+## 👤 Author
+Meir Rosenfeld – Full Stack Developer  
+
+---

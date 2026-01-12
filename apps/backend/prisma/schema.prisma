@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      UserRole @default(USER)
+
+  bookings  Booking[]
+  tokens    RefreshToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id          String   @id @default(uuid())
+  name        String
+  capacity    Int
+  isActive    Boolean  @default(true)
+
+  bookings     Booking[]
+  availability RoomAvailability[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([capacity])
+  @@index([isActive])
+}
+
+model RoomAvailability {
+  id        String   @id @default(uuid())
+  roomId    String
+  date      DateTime
+  isBlocked Boolean  @default(false)
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, date])
+  @@index([date])
+}
+
+model Booking {
+  id        String        @id @default(uuid())
+  userId    String
+  roomId    String
+
+  startDate DateTime
+  endDate   DateTime
+
+  status    BookingStatus @default(PENDING)
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roomId, startDate, endDate])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+}
+
+model AuditEvent {
+  id        String   @id @default(uuid())
+  entity    String
+  entityId  String
+  action    String
+  metadata  Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+}

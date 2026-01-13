@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { pingController } from "./ping.controller";
+import { pingController } from "../controllers/ping.controller";
 import { validate } from "../infra/validate";
-import { pingSchema } from "./ping.schema";
+import { pingSchema } from "../infra/validate/ping.schema";
 
 const router = Router();
 

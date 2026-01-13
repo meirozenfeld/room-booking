@@ -2,6 +2,10 @@ import pino from "pino";
 
 const isProd = process.env.NODE_ENV === "production";
 
+/**
+ * Application logger instance.
+ * Uses pretty printing in development, structured logging in production.
+ */
 export const logger = pino(
     isProd
         ? { level: "info" }

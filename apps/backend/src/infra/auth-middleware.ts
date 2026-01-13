@@ -8,6 +8,11 @@ export interface AuthenticatedRequest extends Request {
     };
 }
 
+/**
+ * Middleware to authenticate requests using JWT access tokens.
+ * Expects Authorization header in format: "Bearer <token>"
+ * Attaches user payload to request object on successful authentication.
+ */
 export function authMiddleware(
     req: AuthenticatedRequest,
     res: Response,

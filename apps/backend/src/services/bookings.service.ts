@@ -8,7 +8,7 @@ import {
     lockBookingForUpdate,
     findBookingById,
     cancelBooking,
-} from "../repositories/bookingRepo";
+} from "../repositories/booking.repo";
 import { logBookingAudit } from "../infra/observability/audit-logger";
 
 export class BookingConflictError extends Error {
@@ -72,24 +72,23 @@ export function createBookingService(prisma: PrismaClient) {
                 status: "ATTEMPT",
             });
 
-            // Everything important happens inside ONE transaction.
+            // All booking operations run in a single transaction to ensure atomicity
+            // and prevent race conditions when multiple users book the same room simultaneously
             return prisma.$transaction(async (tx) => {
-                // 1) Serialize per room (prevents race conditions)
+                // Acquire row-level lock on room to serialize concurrent booking attempts
                 await lockRoomForUpdate(tx, roomId);
 
-                // 2) Validate room is active
                 const active = await isRoomActive(tx, roomId);
                 if (!active) throw new BookingValidationError("Room is inactive or does not exist");
 
-                // 3) Check admin blocks (optional but professional)
+                // Check for admin-defined availability blocks
                 const blocked = await hasBlockedAvailabilityInRange(tx, roomId, startDate, endDate);
                 if (blocked) throw new BookingConflictError("Room is blocked for the requested dates");
 
-                // 4) Check overlap against CONFIRMED bookings
+                // Check for overlapping confirmed bookings (excludes cancelled bookings)
                 const overlap = await findOverlappingConfirmedBooking(tx, roomId, startDate, endDate);
                 if (overlap) throw new BookingConflictError();
 
-                // 5) Create booking (CONFIRMED directly)
                 const booking = await createConfirmedBooking(tx, userId, roomId, startDate, endDate);
 
                 logBookingAudit({
@@ -100,7 +99,7 @@ export function createBookingService(prisma: PrismaClient) {
                     status: booking.status,
                 });
 
-                // 6) Audit (nice touch)
+                // Persist audit trail for compliance and debugging
                 await tx.auditEvent.create({
                     data: {
                         entity: "BOOKING",
@@ -116,7 +115,6 @@ export function createBookingService(prisma: PrismaClient) {
         async cancelBooking(input: CancelBookingInput) {
             const { bookingId, requesterUserId, requesterRole } = input;
 
-            // Audit: attempt
             logBookingAudit({
                 event: "booking_cancel_attempt",
                 bookingId,
@@ -125,7 +123,7 @@ export function createBookingService(prisma: PrismaClient) {
             });
 
             return prisma.$transaction(async (tx) => {
-                // 1) Lock booking row
+                // Lock booking row to prevent concurrent modifications
                 await lockBookingForUpdate(tx, bookingId);
 
                 const booking = await findBookingById(tx, bookingId);
@@ -133,14 +131,14 @@ export function createBookingService(prisma: PrismaClient) {
                     throw new BookingNotFoundError();
                 }
 
-                // 2) Authorization
+                // Verify authorization: only admin or booking owner can cancel
                 const isAdmin = requesterRole === "ADMIN";
                 const isOwner = booking.userId === requesterUserId;
                 if (!isAdmin && !isOwner) {
                     throw new BookingForbiddenError();
                 }
 
-                // 3) Business rules
+                // Enforce business rule: only confirmed bookings can be cancelled
                 if (booking.status !== BookingStatus.CONFIRMED) {
                     throw new BookingNotCancellableError(
                         booking.status === BookingStatus.CANCELLED
@@ -149,13 +147,11 @@ export function createBookingService(prisma: PrismaClient) {
                     );
                 }
 
-                // 4) Serialize with createBooking (same room)
+                // Lock room to serialize with booking creation (prevents race conditions)
                 await lockRoomForUpdate(tx, booking.roomId);
 
-                // 5) Update status
                 const updatedBooking = await cancelBooking(tx, bookingId);
 
-                // Audit: success
                 logBookingAudit({
                     event: "booking_cancelled",
                     bookingId,
@@ -164,7 +160,6 @@ export function createBookingService(prisma: PrismaClient) {
                     status: updatedBooking.status,
                 });
 
-                // 6) DB audit
                 await tx.auditEvent.create({
                     data: {
                         entity: "BOOKING",

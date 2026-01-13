@@ -11,6 +11,11 @@ type SearchRoomsParams = {
     sort: "createdAtDesc" | "capacityAsc";
 };
 
+/**
+ * Searches for active rooms with optional filters.
+ * When date range is provided, excludes rooms with overlapping non-cancelled bookings.
+ * Uses Promise.all to fetch data and count in parallel for better performance.
+ */
 export async function searchRooms(params: SearchRoomsParams) {
     const {
         startDate,

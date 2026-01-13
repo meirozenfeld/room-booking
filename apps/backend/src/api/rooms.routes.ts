@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../infra/validate";
-import { roomSearchQuerySchema } from "./rooms.schemas";
-import { searchRoomsHandler } from "./rooms.controller";
+import { roomSearchQuerySchema } from "../infra/validate/rooms.schemas";
+import { searchRoomsHandler } from "../controllers/rooms.controller";
 
 const router = Router();
 

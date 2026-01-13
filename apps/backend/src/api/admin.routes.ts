@@ -5,7 +5,10 @@ import { prisma } from "../infra/db/prisma";
 
 const router = Router();
 
-// GET /api/admin/users
+/**
+ * Admin-only endpoint to list all users.
+ * Requires ADMIN role for access.
+ */
 router.get("/users", authMiddleware, requireRole("ADMIN"), async (_req, res) => {
     const users = await prisma.user.findMany({
         select: { id: true, email: true, role: true, createdAt: true },

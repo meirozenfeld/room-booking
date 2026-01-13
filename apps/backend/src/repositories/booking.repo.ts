@@ -4,12 +4,18 @@ type Tx = Omit<
     PrismaClient,
     "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >;
+/**
+ * Acquires a row-level lock on the room to prevent concurrent booking conflicts.
+ * Must be called within a database transaction to be effective.
+ */
 export async function lockRoomForUpdate(tx: Tx, roomId: string) {
-    // Row-level lock to serialize bookings per room.
-    // Important: must run INSIDE the same DB transaction.
     await tx.$queryRaw`SELECT id FROM "Room" WHERE id = ${roomId} FOR UPDATE`;
 }
 
+/**
+ * Finds any confirmed booking that overlaps with the given date range.
+ * Uses exclusive end date comparison to detect overlaps.
+ */
 export async function findOverlappingConfirmedBooking(
     tx: Tx,
     roomId: string,
@@ -35,21 +41,23 @@ export async function isRoomActive(tx: Tx, roomId: string) {
     return room?.isActive === true;
 }
 
+/**
+ * Checks if admin has blocked room availability for any date in the given range.
+ * Assumes date represents a day-block starting at 00:00.
+ */
 export async function hasBlockedAvailabilityInRange(
     tx: Tx,
     roomId: string,
     startDate: Date,
     endDate: Date
 ) {
-    // Interpret RoomAvailability as "admin blocks" only.
-    // We assume date represents a day-block (00:00).
     return tx.roomAvailability.findFirst({
         where: {
             roomId,
             isBlocked: true,
             date: {
                 gte: startDate,
-                lt: endDate, // end is exclusive
+                lt: endDate,
             },
         },
         select: { id: true },
@@ -74,29 +82,33 @@ export async function createConfirmedBooking(
     });
 }
 
+/**
+ * Acquires a row-level lock on the booking to prevent concurrent modifications.
+ * Must be called within a database transaction.
+ */
 export async function lockBookingForUpdate(tx: Tx, bookingId: string) {
     await tx.$queryRaw`SELECT id FROM "Booking" WHERE id = ${bookingId} FOR UPDATE`;
-  }
-  
-  export async function findBookingById(tx: Tx, bookingId: string) {
+}
+
+export async function findBookingById(tx: Tx, bookingId: string) {
     return tx.booking.findUnique({
-      where: { id: bookingId },
-      select: {
-        id: true,
-        userId: true,
-        roomId: true,
-        status: true,
-        startDate: true,
-        endDate: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+        where: { id: bookingId },
+        select: {
+            id: true,
+            userId: true,
+            roomId: true,
+            status: true,
+            startDate: true,
+            endDate: true,
+            createdAt: true,
+            updatedAt: true,
+        },
     });
-  }
-  
-  export async function cancelBooking(tx: Tx, bookingId: string) {
+}
+
+export async function cancelBooking(tx: Tx, bookingId: string) {
     return tx.booking.update({
-      where: { id: bookingId },
-      data: { status: BookingStatus.CANCELLED },
+        where: { id: bookingId },
+        data: { status: BookingStatus.CANCELLED },
     });
-  }
+}

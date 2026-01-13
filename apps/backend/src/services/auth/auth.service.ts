@@ -9,9 +9,12 @@ import {
 } from "./jwt";
 import { env } from "../../config/env";
 
+/**
+ * Parses refresh token expiry string to Date object.
+ * Supports numeric seconds or time unit suffixes (s/m/h/d).
+ * Falls back to 7 days if format is invalid.
+ */
 function parseRefreshExpiryToDate() {
-    // env.jwt.refreshExpiresIn דיפולט "7d" — כדי לשמור expiresAt ב-DB
-    // נתמוך בפורמטים נפוצים: "7d" / "24h" / "15m" / מספר שניות (כמספר)
     const v = env.jwt.refreshExpiresIn;
 
     const now = Date.now();
@@ -20,7 +23,6 @@ function parseRefreshExpiryToDate() {
 
     const m = /^(\d+)([smhd])$/.exec(v);
     if (!m) {
-        // fallback: שבוע
         return new Date(now + 7 * 24 * 60 * 60 * 1000);
     }
 
@@ -39,6 +41,10 @@ function parseRefreshExpiryToDate() {
 }
 
 export class AuthService {
+    /**
+     * Registers a new user and returns access/refresh token pair.
+     * Implements single active refresh token per user strategy for simple revocation.
+     */
     static async register(email: string, password: string) {
         const existing = await UserRepo.findByEmail(email);
         if (existing) {
@@ -54,7 +60,7 @@ export class AuthService {
         const accessToken = signAccessToken(payload);
         const refreshToken = signRefreshToken(payload);
 
-        // בסיסי: refresh אחד פעיל למשתמש (פשוט וברור למבחן)
+        // Single active refresh token per user (simple revocation strategy)
         await RefreshTokenRepo.deleteAllForUser(user.id);
         await RefreshTokenRepo.create(user.id, refreshToken, parseRefreshExpiryToDate());
 
@@ -93,8 +99,13 @@ export class AuthService {
         };
     }
 
+    /**
+     * Refreshes access token using refresh token.
+     * Implements token rotation: old refresh token is revoked and new pair is issued.
+     * Verifies token exists in DB to enable server-side revocation.
+     */
     static async refresh(refreshToken: string) {
-        // 1) verify JWT refresh
+        // Verify JWT signature and expiry
         let payload: JwtPayload;
         try {
             payload = verifyRefreshToken(refreshToken);
@@ -102,16 +113,15 @@ export class AuthService {
             return { message: "Invalid refresh token" };
         }
 
-        // 2) verify exists in DB (server-side revocation)
+        // Verify token exists in DB (enables server-side revocation)
         const row = await RefreshTokenRepo.find(refreshToken);
         if (!row) return { message: "Invalid refresh token" };
         if (row.expiresAt.getTime() < Date.now()) {
-            // token פג תוקף — ננקה אותו
             await RefreshTokenRepo.delete(refreshToken).catch(() => { });
             return { message: "Refresh token expired" };
         }
 
-        // 3) rotation: למחוק ישן ולהנפיק חדש
+        // Token rotation: delete old token and issue new pair
         await RefreshTokenRepo.delete(refreshToken).catch(() => { });
         const newAccessToken = signAccessToken({ userId: payload.userId, role: payload.role });
         const newRefreshToken = signRefreshToken({ userId: payload.userId, role: payload.role });
@@ -124,8 +134,11 @@ export class AuthService {
         };
     }
 
+    /**
+     * Revokes refresh token on logout.
+     * Idempotent operation - safe to call multiple times.
+     */
     static async logout(refreshToken: string) {
-        // logout בסיסי: מוחקים refresh אחד אם קיים
         await RefreshTokenRepo.delete(refreshToken).catch(() => { });
     }
 }

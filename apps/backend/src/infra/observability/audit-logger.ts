@@ -18,6 +18,10 @@ interface BookingAuditLog {
     reason?: string;
 }
 
+/**
+ * Logs booking-related audit events for compliance and debugging.
+ * All booking operations are logged with relevant context.
+ */
 export function logBookingAudit(data: BookingAuditLog) {
     logger.info(
         {

@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { randomUUID } from "crypto";
 
+/**
+ * Middleware that generates or preserves request ID for request tracing.
+ * Uses x-request-id header if provided, otherwise generates a new UUID.
+ */
 export function requestIdMiddleware(
     req: Request,
     res: Response,

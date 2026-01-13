@@ -2,6 +2,10 @@ import { ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "./app-error";
 
+/**
+ * Middleware factory that validates request data (body, query, params) against a Zod schema.
+ * Throws AppError with 400 status if validation fails.
+ */
 export const validate =
     (schema: ZodSchema) =>
         (req: Request, _res: Response, next: NextFunction) => {

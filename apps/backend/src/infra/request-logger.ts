@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "./logger";
 
+/**
+ * Middleware that logs HTTP request details including method, path, status, and duration.
+ * Uses response 'finish' event to capture complete request lifecycle.
+ */
 export function requestLogger(
     req: Request,
     res: Response,

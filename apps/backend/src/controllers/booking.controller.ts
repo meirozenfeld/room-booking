@@ -6,12 +6,16 @@ import {
     BookingNotFoundError,
     BookingForbiddenError,
     BookingNotCancellableError,
-} from "../services/bookingService";
+} from "../services/bookings.service";
 import { prisma } from "../infra/db/prisma";
 import { AuthenticatedRequest } from "../infra/auth-middleware";
 
 const bookingService = createBookingService(prisma);
 
+/**
+ * Creates a new booking for the authenticated user.
+ * Maps service errors to appropriate HTTP status codes.
+ */
 export async function createBooking(
     req: AuthenticatedRequest,
     res: Response
@@ -42,6 +46,11 @@ export async function createBooking(
         throw err;
     }
 }
+
+/**
+ * Cancels a booking. Only the booking owner or admin can cancel.
+ * Maps service errors to appropriate HTTP status codes.
+ */
 export async function cancelBookingHandler(
     req: AuthenticatedRequest,
     res: Response

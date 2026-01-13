@@ -14,7 +14,7 @@ import { authRateLimiter } from "./infra/rate-limit";
 import usersRouter from "./api/users.routes";
 import adminRouter from "./api/admin.routes";
 import roomsRouter from "./api/rooms.routes";
-import bookingsRoutes from "./api/routes/bookingsRoutes";
+import bookingsRoutes from "./api/bookings.routes";
 import { metricsMiddleware } from "./infra/observability/metrics-middleware";
 import { metricsHandler } from "./infra/observability/metrics-route";
 import { AppError } from "./infra/app-error";
@@ -36,7 +36,6 @@ app.use(requestIdMiddleware);
 app.use(requestLogger);
 app.use(metricsMiddleware);
 
-// health & Readiness
 app.get("/health", healthHandler);
 app.get("/ready", async (_req, res) => {
     try {
@@ -61,5 +60,6 @@ app.use("/bookings", bookingsRoutes);
 app.use((req, res) => {
     throw new AppError("Route not found", 404);
 });
-// error handler – תמיד אחרון
+
+// Error handler
 app.use(errorMiddleware);

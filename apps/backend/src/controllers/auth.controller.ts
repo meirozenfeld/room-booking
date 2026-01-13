@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { registerSchema, loginSchema, refreshSchema } from "./auth.schemas";
+import { registerSchema, loginSchema, refreshSchema } from "../infra/validate/auth.schemas";
 import { AuthService } from "../services/auth/auth.service";
 
 export class AuthController {

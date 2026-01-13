@@ -330,7 +330,7 @@ See `.env.example` for a local development template.
 ```bash
 npm install
 npx prisma migrate dev
-npx prisma db seed
+npx prisma db seed # local development only
 npm run dev
 ```
 
@@ -361,11 +361,59 @@ runtime image minimal and free of development-only dependencies:
 
 ```bash
 cd apps/backend
-npx prisma db seed
+npx prisma db seed # local development only
 ```
 
 ---
 
+## ☁️ Production Deployment
+
+The system is deployed using a fully free-tier, production-oriented setup,
+designed to mirror real-world deployment constraints.
+
+### Live Environments
+
+- **Frontend (Vercel)**  
+  https://room-booking-dusky.vercel.app
+
+- **Backend API (Render)**  
+  https://room-booking-p0k7.onrender.com
+
+### Deployment Stack
+
+- **Frontend**
+  - Vercel
+  - Static React build
+  - Environment-based API configuration
+
+- **Backend**
+  - Render (Docker-based deployment)
+  - Stateless Node.js service
+  - Health and readiness probes enabled
+
+- **Database**
+  - Neon (Managed PostgreSQL)
+  - Schema migrations executed via `prisma migrate deploy`
+  - No automatic data seeding in production
+
+### Environment Separation
+
+- Local development uses `.env` and optional database seeding.
+- Production environments rely exclusively on managed secrets.
+- Seed data is intentionally **not executed in production** to prevent
+  unintended data injection and to ensure realistic user flows.
+
+### Authentication in Production
+
+- Users are created via the registration flow.
+- No pre-seeded demo users exist in production.
+- Access tokens are issued on login and attached explicitly
+  via the `Authorization` header.
+
+This separation ensures that the production environment behaves
+consistently with real-world systems rather than development shortcuts.
+
+---
 ## 📌 Design Philosophy
 
 This project intentionally prioritizes:

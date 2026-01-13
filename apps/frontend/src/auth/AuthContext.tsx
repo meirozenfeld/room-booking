@@ -48,13 +48,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             method: "POST",
             body: JSON.stringify({ email, password }),
         });
-
-        setUser(res.user);
+    
         setToken(res.accessToken);
         setAccessToken(res.accessToken);
         localStorage.setItem("accessToken", res.accessToken);
-        localStorage.setItem("refreshToken", res.refreshToken);
+    
+        await loadMe(res.accessToken);
     }
+    
 
     async function register(email: string, password: string) {
         const res = await apiFetch("/api/auth/register", {

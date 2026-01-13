@@ -188,3 +188,26 @@ The goal of the project is to build a realistic, production-style system that de
 - Designed for future scalability without premature complexity
 
 ---
+
+### Final Production Deployment (Phase 9)
+
+The final production deployment uses a fully free-tier setup,
+selected to demonstrate realistic deployment constraints and
+environment separation.
+
+**Selected Providers:**
+- **Frontend:** Vercel  
+- **Backend:** Render (Docker-based service)  
+- **Database:** Neon (Managed PostgreSQL)
+
+**Rationale:**
+- Clear separation between frontend, backend, and database layers
+- Zero-cost deployment suitable for portfolio and interview use
+- Supports environment-based configuration and managed secrets
+- Reflects common real-world deployment patterns for small-to-medium systems
+
+Database migrations are executed via `prisma migrate deploy`.
+Seed data is intentionally **not executed in production** to ensure
+realistic user creation flows.
+
+---

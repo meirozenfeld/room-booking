@@ -34,10 +34,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const stored = localStorage.getItem("accessToken");
         if (stored) {
             setToken(stored);
+            setAccessToken(stored);
             loadMe(stored);
         }
         setIsInitializing(false);
     }, []);
+
 
 
 

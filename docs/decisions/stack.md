@@ -160,11 +160,13 @@ The goal of the project is to build a realistic, production-style system that de
 
 ### Containerization
 - **Docker**
-- **Docker Compose (development)**
+- **Docker Compose (system-level local orchestration)**
 
 **Rationale:**
-- Environment parity between development and production.
-- Simplified onboarding and reproducibility.
+- Production-like local runtime for the backend service.
+- Clear separation between application runtime and infrastructure services.
+- Enables one-command local setup while keeping the runtime image minimal.
+
 
 ### Deployment Targets (Free-tier Friendly)
 - **Frontend:** Vercel or Netlify

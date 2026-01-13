@@ -18,6 +18,7 @@ import bookingsRoutes from "./api/routes/bookingsRoutes";
 import { metricsMiddleware } from "./infra/observability/metrics-middleware";
 import { metricsHandler } from "./infra/observability/metrics-route";
 import { AppError } from "./infra/app-error";
+import { checkReadiness } from "./infra/ready";
 
 dotenv.config();
 
@@ -35,8 +36,18 @@ app.use(requestIdMiddleware);
 app.use(requestLogger);
 app.use(metricsMiddleware);
 
-// health
+// health & Readiness
 app.get("/health", healthHandler);
+app.get("/ready", async (_req, res) => {
+    try {
+        await checkReadiness();
+        res.status(200).json({ status: "ready" });
+    } catch (err) {
+        res.status(503).json({ status: "not_ready" });
+    }
+});
+
+
 app.get("/metrics", metricsHandler);
 
 app.use("/api", pingRouter);

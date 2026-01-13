@@ -25,7 +25,9 @@ development practices rather than a toy implementation.
 - **Database**: PostgreSQL (via Prisma ORM)  
 - **Authentication**: JWT (Access + Refresh Tokens)  
 - **Security**: Password hashing, rate limiting, role-based access control  
-- **DevOps**: Docker (local), environment-based configuration  
+- **DevOps**: Docker (system-level local orchestration via Docker Compose),
+  production-like backend container, environment-based configuration
+  nment-based configuration  
 
 High-level architecture and diagrams are available under `/docs`.
 
@@ -227,6 +229,17 @@ Design rationale is documented under `/docs/decisions/room-search.md`.
 The system is designed with production-grade observability, enabling deep visibility
 into both technical behavior and business-critical flows.
 
+### Health & Readiness Probes
+
+The backend exposes two operational endpoints:
+
+- `/health` – liveness probe indicating that the application process is running.
+- `/ready` – readiness probe validating that critical dependencies
+  (e.g. database connectivity) are available before receiving traffic.
+
+This separation allows the system to remain observable and resilient
+under partial failure scenarios.
+
 ### Metrics (Prometheus-Compatible)
 
 The backend exposes a `/metrics` endpoint compatible with Prometheus.
@@ -314,10 +327,42 @@ See `.env.example` for a local development template.
 ---
 
 ## Install & Run
+```bash
 npm install
 npx prisma migrate dev
 npx prisma db seed
 npm run dev
+```
+
+### Dockerized Local Setup (Recommended)
+
+The project supports a one-command local setup using Docker Compose,
+providing a production-like runtime environment.
+
+```bash
+docker compose up --build
+```
+
+Once the containers are running:
+
+Backend health check: http://127.0.0.1:3000/health
+
+Backend readiness check: http://127.0.0.1:3000/ready
+
+Metrics endpoint: http://127.0.0.1:3000/metrics
+
+Database migrations are executed inside the backend container:
+
+docker compose exec backend npx prisma migrate deploy
+
+
+Database seeding is performed from the host environment to keep the
+runtime image minimal and free of development-only dependencies:
+
+```bash
+cd apps/backend
+npx prisma db seed
+```
 
 ---
 

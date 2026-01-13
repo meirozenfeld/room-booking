@@ -15,9 +15,13 @@ export async function apiFetch(
         ...(options.headers as Record<string, string> | undefined),
     };
 
-    if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
+    const token =
+        accessToken || localStorage.getItem("accessToken");
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
     }
+
 
     const res = await fetch(`${env.apiBaseUrl}${path}`, {
         ...options,

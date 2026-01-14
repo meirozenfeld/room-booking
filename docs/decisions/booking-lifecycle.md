@@ -9,6 +9,15 @@ CONFIRMED → CANCELLED
 Bookings are either successfully created and immediately confirmed, or rejected.
 There is no intermediate or partial booking state.
 
+### Date Semantics
+
+Bookings support both multi-day and single-day reservations.
+
+- A **single-day booking** is represented by identical calendar dates
+  (`startDate === endDate`) and is treated as a valid reservation for that day.
+- Internally, availability checks and overlap detection rely on
+  exclusive end-date logic to ensure correctness and prevent double booking.
+
 ## Why no PENDING state?
 
 Although a `PENDING` status exists in the database schema, it is not used in the current flow.

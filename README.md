@@ -21,7 +21,7 @@ development practices rather than a toy implementation.
 ## 🧱 Architecture Overview
 
 - **Backend**: Node.js + Express + TypeScript
-- **Frontend**: React + TypeScript (client-side rendered)    
+- **Frontend**: React + TypeScript (client-side rendered, modular feature-based structure)
 - **Database**: PostgreSQL (via Prisma ORM)  
 - **Authentication**: JWT (Access + Refresh Tokens)  
 - **Security**: Password hashing, rate limiting, role-based access control  
@@ -42,6 +42,11 @@ each selected to support correctness, safety, and operational clarity.
   - Type-safe database access
   - Explicit transaction boundaries
   - Schema-driven migrations
+
+- **PostgreSQL**
+  - Relational data model with strong consistency guarantees
+  - Transactional safety for concurrency-sensitive booking flows
+  - Managed in production via Neon
 
 - **Zod**
   - Runtime request validation at API boundaries
@@ -72,18 +77,26 @@ each selected to support correctness, safety, and operational clarity.
   - Environment-based configuration
   - Clear separation between code and secrets
 
+- **Vite**
+  - Fast local development and optimized production builds
+  - Modern ESM-based tooling
+
+- **React Router**
+  - Declarative client-side routing
+  - Nested layouts and protected routes
+
 ---
 
 ## 📁 Project Structure (Backend)
 
 ```text
 src/
-├─ api/            # HTTP layer (routes, controllers, schemas)
+├─ api/            # Routes (Express routers)
+├─ controllers/    # HTTP handlers (thin controllers)
 ├─ services/       # Business logic
 ├─ repositories/   # Data access (Prisma)
-├─ infra/          # Cross-cutting concerns (auth, logging, rate-limit, etc.)
+├─ infra/          # Cross-cutting concerns (auth, logging, validation, etc.)
 ├─ config/         # Environment & configuration
-├─ domain/         # Domain concepts (reserved for later phases)
 ├─ app.ts          # Express app configuration
 └─ server.ts       # Server bootstrap
 ```
@@ -93,18 +106,21 @@ src/
 ```text
 src/
 ├─ api/            # API client wrappers
-├─ components/     # Reusable UI components
-├─ pages/          # Route-level components
-├─ hooks/          # Custom React hooks
-├─ auth/           # Authentication guards & helpers
-├─ types/          # Shared TypeScript types
-├─ utils/          # Utility functions
-├─ App.tsx         # Root application component
-└─ main.tsx        # Application bootstrap
+├─ assets/         # Static assets
+├─ components/     # Shared UI components
+├─ config/         # App config (e.g. API base)
+├─ features/       # Feature modules (rooms, bookings, dashboard, auth, etc.)
+├─ layout/         # App shell (sidebar, page layout)
+├─ routes/         # Route definitions
+├─ utils/          # Utilities (dates, helpers)
+├─ App.tsx
+├─ index.css
+└─ main.tsx
 ```
 
-This structure follows clean architecture principles and allows the project to scale
-without premature over-engineering.
+The frontend follows a feature-based structure, grouping UI, hooks, and logic
+by domain. This improves locality, reduces cross-module coupling, and supports
+incremental growth without introducing global state management prematurely.
 
 ---
 
@@ -156,8 +172,11 @@ The system uses a secure, production-oriented authentication model:
 - `GET /api/rooms/search` (read-heavy, paginated)
 
 ### Bookings
-- `POST /bookings` (authenticated, concurrency-safe)
+- `POST /bookings` (authenticated, concurrency-safe, supports single-day bookings)
+- `GET /bookings/my` (authenticated, paginated, section-aware)
 - `PATCH /bookings/:id/cancel` (owner or ADMIN)
+- `PATCH /bookings/:id/reschedule` (owner or ADMIN)
+
 
 ---
 
@@ -174,6 +193,9 @@ clarity, and alignment with backend consistency guarantees.
 - Explicit booking confirmation to avoid accidental writes
 - No optimistic UI for booking operations
 - Explicit handling of booking conflicts (HTTP 409)
+- Dedicated "My Bookings" page with section-based navigation (Upcoming / Past / Cancelled)
+- Server-driven pagination per section
+- Explicit reload after mutating operations (cancel / reschedule)
 
 The frontend intentionally avoids complex state management or heavy UI frameworks,
 keeping the focus on system behavior rather than presentation.
@@ -383,7 +405,7 @@ designed to mirror real-world deployment constraints.
 
 - **Frontend**
   - Vercel
-  - Static React build
+  - Static React build (Vite)
   - Environment-based API configuration
 
 - **Backend**
@@ -433,8 +455,10 @@ This project intentionally prioritizes:
 
 ## 📚 Documentation
 
-Detailed diagrams, sequence flows, and design notes are available under:
+Detailed diagrams, sequence flows, and architectural decisions are available under:
 /docs
+
+Key behavioral decisions are documented under `/docs/decisions`.
 
 ---
 

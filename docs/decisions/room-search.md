@@ -15,6 +15,10 @@ A room is considered unavailable if there exists at least one booking such that:
 - booking.endDate > requestedStartDate
 - booking.status != CANCELLED
 
+This logic supports both multi-day and single-day bookings using
+exclusive end-date comparison.
+
+
 ## Rationale
 - Search is eventually consistent by design
 - Strong consistency is enforced only during booking creation

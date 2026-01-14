@@ -1,3 +1,7 @@
+/**
+ * Room card skeleton loader component
+ * Shows loading placeholder for room card
+ */
 export default function RoomCardSkeleton() {
     return (
         <div className="bg-white rounded-2xl shadow p-6 animate-pulse">

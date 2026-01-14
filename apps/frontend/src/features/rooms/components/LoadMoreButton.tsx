@@ -4,6 +4,10 @@ type Props = {
     onClick: () => void;
 };
 
+/**
+ * Load more button component
+ * Displays button to load additional pages of results
+ */
 export default function LoadMoreButton({
     loading,
     hasNext,

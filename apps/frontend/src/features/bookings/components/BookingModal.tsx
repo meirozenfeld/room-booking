@@ -12,6 +12,10 @@ type Props = {
     onSuccess: () => void;
 };
 
+/**
+ * Booking modal component
+ * Wraps the booking confirmation form in a modal
+ */
 export default function BookingModal({
     open,
     onClose,

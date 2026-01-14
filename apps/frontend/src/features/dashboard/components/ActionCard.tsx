@@ -7,6 +7,10 @@ type Props = {
     to: string;
 };
 
+/**
+ * Action card component
+ * Displays a clickable card with icon, title, and description
+ */
 export default function ActionCard({ title, description, icon, to }: Props) {
     return (
         <Link

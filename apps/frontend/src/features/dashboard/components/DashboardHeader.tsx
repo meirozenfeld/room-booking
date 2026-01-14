@@ -5,6 +5,10 @@ type Props = {
     name: string;
 };
 
+/**
+ * Dashboard header component
+ * Displays app logo and personalized greeting
+ */
 export default function DashboardHeader({ greeting, name }: Props) {
     return (
         <div className="space-y-3">

@@ -6,6 +6,10 @@ import BookingsFilters from "../components/BookingsFilters";
 import type { Filters } from "../components/BookingsFilters";
 import { useState } from "react";
 
+/**
+ * My Bookings page component
+ * Displays user's bookings with filtering, sorting, and pagination
+ */
 export default function MyBookingsPage() {
     const [activeTab, setActiveTab] = useState<
         "upcoming" | "past" | "cancelled"
@@ -21,7 +25,9 @@ export default function MyBookingsPage() {
 
     const { bookings, counts, loading, error, hasMore, loadMore, reload } = useMyBookings(filters, activeTab);
 
-
+    /**
+     * Resets all filters to default values
+     */
     function clearFilters() {
         setFilters({
             search: "",

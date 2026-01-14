@@ -6,13 +6,19 @@ type Props = {
     counts: Record<Tab, number>;
 };
 
-
+/**
+ * Tab configuration for bookings sections
+ */
 const tabs: { key: Tab; label: string }[] = [
     { key: "upcoming", label: "Upcoming" },
     { key: "past", label: "Past" },
     { key: "cancelled", label: "Cancelled" },
 ];
 
+/**
+ * Bookings tabs component
+ * Displays tabs for different booking sections with counts
+ */
 export default function BookingsTabs({ active, onChange, counts }: Props) {
     return (
         <div className="flex gap-2">

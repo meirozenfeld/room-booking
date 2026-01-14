@@ -5,6 +5,9 @@ type Props = {
     upcomingIcon: string;
 };
 
+/**
+ * Individual statistic card component
+ */
 function StatCard({
     label,
     value,
@@ -32,7 +35,10 @@ function StatCard({
     );
 }
 
-
+/**
+ * Dashboard statistics component
+ * Displays total and upcoming booking counts
+ */
 export default function DashboardStats({ total, upcoming, totalIcon, upcomingIcon }: Props) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

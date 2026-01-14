@@ -14,11 +14,19 @@ type ToastContextType = {
     showToast: (message: string, type?: ToastType) => void;
 };
 
+/**
+ * Toast notification context
+ * Provides global toast notification functionality
+ */
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
     const [toasts, setToasts] = useState<Toast[]>([]);
 
+    /**
+     * Shows a toast notification
+     * Automatically removes after 3 seconds
+     */
     function showToast(message: string, type: ToastType = "info") {
         const id = Date.now();
         setToasts((prev) => [...prev, { id, message, type }]);
@@ -36,6 +44,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     );
 }
 
+/**
+ * Hook to access toast context
+ * Must be used within ToastProvider
+ */
 export function useToast() {
     const ctx = useContext(ToastContext);
     if (!ctx) throw new Error("useToast must be used within ToastProvider");

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { searchRooms, type Room } from "../../../api/rooms.api";
 
+/**
+ * Custom hook for rooms search functionality
+ * Manages search state, pagination, and room selection
+ */
 export function useRoomsSearch() {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [page, setPage] = useState(1);
@@ -13,8 +17,13 @@ export function useRoomsSearch() {
     const [endDate, setEndDate] = useState("");
     const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
+    /**
+     * Performs room search with validation
+     * @param reset - Whether to reset pagination (true) or load next page (false)
+     */
     async function handleSearch(reset = true) {
         try {
+            // Validate date inputs
             if (startDate && !endDate) {
                 setError("Please select an end date");
                 setRooms([]);      
@@ -35,14 +44,16 @@ export function useRoomsSearch() {
                 setHasNext(false); 
                 return;
             }
-            
 
+            // Validate capacity
             if (capacity !== undefined && capacity < 1) {
                 setError("Capacity must be at least 1");
                 setRooms([]);      
                 setHasNext(false); 
                 return;
             }
+
+            // Clear selected room when starting new search
             if (reset) {
                 setSelectedRoomId(null);
             }

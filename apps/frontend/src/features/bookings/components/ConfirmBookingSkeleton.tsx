@@ -1,3 +1,7 @@
+/**
+ * Confirm booking skeleton loader component
+ * Shows loading placeholder for booking confirmation
+ */
 export default function ConfirmBookingSkeleton() {
     return (
         <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3 animate-pulse">

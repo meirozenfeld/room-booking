@@ -12,7 +12,10 @@ type Props = {
     onError?: (message: string) => void;
 };
 
-
+/**
+ * Booking confirmation component
+ * Displays booking details and handles booking creation
+ */
 export default function ConfirmBooking({
     roomId,
     roomName,
@@ -21,9 +24,12 @@ export default function ConfirmBooking({
     onSuccess,
     onError,
 }: Props) {
-
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Handles booking confirmation
+     * Creates the booking via API
+     */
     async function handleConfirm() {
         try {
             setLoading(true);

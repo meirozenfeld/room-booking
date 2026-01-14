@@ -7,6 +7,10 @@ type Props = {
     isOpen: boolean;
 };
 
+/**
+ * Sidebar navigation item component
+ * Renders a navigation link with icon and optional label
+ */
 export default function SidebarItem({ to, label, icon, isOpen }: Props) {
     return (
         <NavLink

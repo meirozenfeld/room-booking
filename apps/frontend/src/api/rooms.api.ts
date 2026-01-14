@@ -24,6 +24,11 @@ type SearchParams = {
     sort: "createdAtDesc" | "capacityAsc";
 };
 
+/**
+ * Searches for available rooms with filters
+ * @param params - Search parameters (dates, capacity, pagination, sorting)
+ * @returns Paginated rooms response
+ */
 export async function searchRooms(
     params: SearchParams
 ): Promise<RoomsSearchResponse> {

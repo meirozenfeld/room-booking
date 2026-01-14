@@ -3,6 +3,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../AuthContext";
 import { AuthForm } from "../components/AuthForm";
 
+/**
+ * Registration page component
+ * Handles new user registration and redirects to rooms page on success
+ */
 export default function RegisterPage() {
     const { register } = useAuth();
     const navigate = useNavigate();
@@ -12,14 +16,20 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    /**
+     * Validates email format using regex
+     */
     function isValidEmail(value: string) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
 
+    /**
+     * Handles form submission with client-side validation
+     */
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        // client-side validation
+        // Client-side validation
         if (!email || !password) {
             setError("Email and password are required");
             return;
@@ -40,7 +50,7 @@ export default function RegisterPage() {
             setError(null);
 
             await register(email, password);
-            navigate("/rooms");
+            navigate("/");
         } catch (err: any) {
             if (err.status === 409) {
                 setError("An account with this email already exists");

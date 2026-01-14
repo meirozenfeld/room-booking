@@ -4,6 +4,10 @@ import { useRoomsSearch } from "../hooks/useRoomsSearch";
 import LoadMoreButton from "../components/LoadMoreButton";
 import { useToast } from "../../../components/toast/ToastContext";
 
+/**
+ * Rooms search page component
+ * Allows users to search for available rooms with filters
+ */
 export default function RoomsSearchPage() {
     const {
         rooms,
@@ -46,7 +50,7 @@ export default function RoomsSearchPage() {
                 </div>
             )}
 
-            {/* 🟦 כאן הרשימה */}
+            {/* Rooms list */}
             <RoomsList
                 rooms={rooms}
                 startDate={startDate}
@@ -60,14 +64,14 @@ export default function RoomsSearchPage() {
 
             />
 
-            {/* 🟨 כאן ה-EMPTY STATE */}
+            {/* Empty state when no rooms found */}
             {!loading && rooms.length === 0 && !error && (
                 <div className="text-center text-slate-500 py-12">
                     No rooms found for the selected criteria
                 </div>
             )}
 
-            {/* ⬇️ Load more */}
+            {/* Load more button */}
             <LoadMoreButton
                 loading={loading}
                 hasNext={hasNext}

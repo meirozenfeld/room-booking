@@ -7,6 +7,10 @@ import DashboardSkeleton from "../components/DashboardSkeleton";
 import totalIcon from "../../../assets/icons/total_bookings.png";
 import upcomingIcon from "../../../assets/icons/uncoming_bookings.png";
 
+/**
+ * Dashboard page component
+ * Displays user statistics, upcoming bookings, and quick actions
+ */
 export default function DashboardPage() {
     const { greeting, name, stats, upcomingPreview, loading } = useDashboard();
     if (loading) {

@@ -1,3 +1,7 @@
+/**
+ * Bookings list skeleton loader component
+ * Shows loading placeholders for booking cards
+ */
 export default function BookingsListSkeleton() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

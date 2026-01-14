@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { getDashboardStats } from "../../../api/dashboard.api";
 
+/**
+ * Returns greeting based on current hour
+ */
 function getGreetingByHour(hour: number) {
     if (hour >= 5 && hour < 12) return "Good morning";
     if (hour >= 12 && hour < 17) return "Good afternoon";
@@ -9,10 +12,17 @@ function getGreetingByHour(hour: number) {
     return "Good night";
 }
 
+/**
+ * Extracts name from email address (part before @)
+ */
 function getNameFromEmail(email: string) {
     return email.split("@")[0];
 }
 
+/**
+ * Custom hook for dashboard data
+ * Fetches and manages dashboard statistics and upcoming bookings
+ */
 export function useDashboard() {
     const { user } = useAuth();
 
@@ -38,6 +48,7 @@ export function useDashboard() {
 
     const [loading, setLoading] = useState(true);
 
+    // Load dashboard data on mount
     useEffect(() => {
         async function loadStats() {
             try {

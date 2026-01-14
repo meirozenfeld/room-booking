@@ -1,3 +1,8 @@
+/**
+ * Formats a date string to DD-MM-YYYY format
+ * @param date - ISO date string
+ * @returns Formatted date string (DD-MM-YYYY)
+ */
 export function formatDate(date: string) {
     const d = new Date(date);
 

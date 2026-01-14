@@ -2,6 +2,10 @@ import ActionCard from "./ActionCard";
 import findRoomsIcon from "../../../assets/icons/find_rooms.png";
 import myBookingsIcon from "../../../assets/icons/my_bookings.png";
 
+/**
+ * Dashboard actions component
+ * Displays quick action cards for common tasks
+ */
 export default function DashboardActions() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

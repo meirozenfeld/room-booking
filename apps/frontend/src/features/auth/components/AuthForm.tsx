@@ -16,6 +16,10 @@ type AuthFormProps = {
     isSubmitting?: boolean;
 };
 
+/**
+ * Reusable authentication form component
+ * Used for both login and registration
+ */
 export function AuthForm({
     title,
     submitLabel,
@@ -28,13 +32,11 @@ export function AuthForm({
     footer,
     isSubmitting,
 }: AuthFormProps) {
-
     const [showPassword, setShowPassword] = useState(false);
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-gradient-to-br from-slate-100 to-slate-200">
-
-            {/* LOGO + TITLE (outside the card) */}
+            {/* Logo and title section */}
             <div className="flex flex-col items-center gap-2">
                 <img
                     src={logoTitle}
@@ -47,7 +49,7 @@ export function AuthForm({
                 </div>
             </div>
 
-            {/* CARD */}
+            {/* Authentication form card */}
             <form
                 onSubmit={onSubmit}
                 className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 animate-fade-in"
@@ -71,6 +73,7 @@ export function AuthForm({
                         className="w-full rounded-lg border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500"
                     />
 
+                    {/* Password input with show/hide toggle */}
                     <div className="relative">
                         <input
                             type={showPassword ? "text" : "password"}
@@ -80,6 +83,7 @@ export function AuthForm({
                             className="w-full rounded-lg border border-slate-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-slate-500"
                         />
 
+                        {/* Toggle password visibility button */}
                         <button
                             type="button"
                             onClick={() => setShowPassword((prev) => !prev)}

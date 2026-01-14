@@ -6,6 +6,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoomsSearchPage from "../../src/features/rooms/pages/RoomsSearchPage";
 import MyBookingsPage from "../features/bookings/pages/MyBookingsPage";
 
+/**
+ * Application routing configuration
+ * Defines all routes and their corresponding components
+ */
 export default function AppRoutes() {
     return (
         <BrowserRouter>

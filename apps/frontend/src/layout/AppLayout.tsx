@@ -2,16 +2,22 @@ import { useEffect, useState } from "react";
 import Sidebar from "./Sidebar";
 import type { ReactNode } from "react";
 
+/**
+ * Main application layout component
+ * Manages sidebar state and provides consistent layout structure
+ */
 export default function AppLayout({ children }: { children: ReactNode }) {
+    // Initialize sidebar state from localStorage or default to open
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
         const stored = localStorage.getItem("sidebarOpen");
         return stored ? JSON.parse(stored) : true;
     });
 
+    // Persist sidebar state to localStorage
     useEffect(() => {
         localStorage.setItem("sidebarOpen", JSON.stringify(sidebarOpen));
     }, [sidebarOpen]);
-    
+
     return (
         <div className="min-h-screen bg-slate-100 flex">
             <Sidebar
@@ -19,7 +25,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 onToggle={() => setSidebarOpen((v) => !v)}
             />
 
-            {/* Mobile overlay */}
+            {/* Mobile overlay - closes sidebar when clicked */}
             {sidebarOpen && (
                 <div
                     onClick={() => setSidebarOpen(false)}

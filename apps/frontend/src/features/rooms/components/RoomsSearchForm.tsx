@@ -9,6 +9,10 @@ type Props = {
     onSearch: () => void;
 };
 
+/**
+ * Rooms search form component
+ * Provides filters for searching rooms (capacity, dates)
+ */
 export default function RoomsSearchForm({
     capacity,
     startDate,
@@ -30,7 +34,7 @@ export default function RoomsSearchForm({
                 onChange={(e) => {
                     const raw = e.target.value;
 
-                    // מאפשר למחוק את השדה
+                    // Allow clearing the field by setting to undefined
                     if (raw === "") {
                         onCapacityChange(undefined);
                         return;

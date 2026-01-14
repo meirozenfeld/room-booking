@@ -11,6 +11,10 @@ type Props = {
     onBookingSuccess: () => void;
 };
 
+/**
+ * Rooms list component
+ * Displays grid of room cards and handles booking modal
+ */
 export default function RoomsList({
     rooms,
     startDate,

@@ -8,6 +8,10 @@ type Props = {
     onCancel: () => void;
 };
 
+/**
+ * Confirmation dialog component
+ * Displays a modal for user confirmation before destructive actions
+ */
 export default function ConfirmDialog({
     open,
     title,

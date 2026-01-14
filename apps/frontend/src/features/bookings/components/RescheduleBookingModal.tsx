@@ -14,6 +14,10 @@ type Props = {
     onSuccess: () => void;
 };
 
+/**
+ * Reschedule booking modal component
+ * Allows users to change booking dates
+ */
 export default function RescheduleBookingModal({
     open,
     onClose,
@@ -29,6 +33,9 @@ export default function RescheduleBookingModal({
     const [endDate, setEndDate] = useState(initialEndDate.slice(0, 10));
     const [loading, setLoading] = useState(false);
 
+    /**
+     * Validates and saves new booking dates
+     */
     async function handleSave() {
         if (!startDate || !endDate || startDate > endDate) {
             showToast("Invalid date range", "error");

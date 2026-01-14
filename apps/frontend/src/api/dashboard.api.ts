@@ -17,6 +17,10 @@ export type DashboardStatsResponse = {
     upcomingPreview: UpcomingBookingPreview[];
 };
 
+/**
+ * Fetches dashboard statistics and upcoming bookings preview
+ * @returns Dashboard data including stats and upcoming bookings
+ */
 export async function getDashboardStats(): Promise<DashboardStatsResponse> {
     return apiFetch("/api/dashboard");
 }

@@ -14,10 +14,16 @@ type Props = {
     onToggle: () => void;
 };
 
+/**
+ * Sidebar navigation component
+ * Displays navigation items and user information
+ * Supports collapsible/expandable state
+ */
 export default function Sidebar({ isOpen, onToggle }: Props) {
     const { user, logout } = useAuth();
     const [showText, setShowText] = useState(isOpen);
 
+    // Delay text visibility for smooth animation when opening
     useEffect(() => {
         if (isOpen) {
             const t = setTimeout(() => setShowText(true), 200);
@@ -39,8 +45,7 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
         md:translate-x-0
     `}
         >
-
-            {/* Top */}
+            {/* Header section with logo and toggle button */}
             <div
                 className={`
         h-14 border-b border-slate-200
@@ -65,8 +70,7 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
                 )}
             </div>
 
-
-            {/* User */}
+            {/* User information section - only visible when sidebar is open */}
             {user && isOpen && (
                 <div className="px-4 py-4 border-b border-slate-200">
                     <div className="text-xs text-slate-500">Logged in as</div>
@@ -75,7 +79,7 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
                 </div>
             )}
 
-            {/* Nav */}
+            {/* Navigation menu */}
             <nav className="px-2 py-4 space-y-1 flex-1">
                 <SidebarItem
                     to="/"
@@ -100,7 +104,7 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
 
             </nav>
 
-            {/* Logout */}
+            {/* Logout button */}
             <div className="px-2 py-4 border-t border-slate-200">
                 <button
                     onClick={logout}
@@ -123,6 +127,10 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
     );
 }
 
+/**
+ * Sidebar toggle button component
+ * Allows users to collapse/expand the sidebar
+ */
 function ToggleButton({
     isOpen,
     onToggle,

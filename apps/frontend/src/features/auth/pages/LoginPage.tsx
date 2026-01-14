@@ -3,6 +3,10 @@ import { useAuth } from "../AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthForm } from "../components/AuthForm";
 
+/**
+ * Login page component
+ * Handles user authentication and redirects to dashboard on success
+ */
 export default function LoginPage() {
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -12,10 +16,16 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    /**
+     * Validates email format using regex
+     */
     function isValidEmail(value: string) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     }
 
+    /**
+     * Handles form submission with validation and error handling
+     */
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!email || !password) {

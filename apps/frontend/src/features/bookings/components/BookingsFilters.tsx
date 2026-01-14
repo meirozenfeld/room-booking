@@ -7,15 +7,18 @@ export type Filters = {
     order?: "asc" | "desc";
 };
 
-
 type Props = {
     filters: Filters;
     onChange: (next: Filters) => void;
     onClear: () => void;
 };
 
-
+/**
+ * Bookings filters component
+ * Provides search, date range, capacity, and sorting filters
+ */
 export default function BookingsFilters({ filters, onChange, onClear }: Props) {
+    // Check if any filters are active (non-default values)
     const hasActiveFilters =
         filters.search ||
         filters.startDate ||

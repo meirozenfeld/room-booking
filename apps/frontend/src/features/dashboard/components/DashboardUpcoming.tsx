@@ -14,10 +14,16 @@ type Props = {
     items: Booking[];
 };
 
+/**
+ * Formats date to locale string
+ */
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString();
 }
 
+/**
+ * Gets relative time label (Today, Tomorrow, In X days)
+ */
 function getRelativeLabel(startDate: string) {
     const now = new Date();
     const start = new Date(startDate);
@@ -30,6 +36,10 @@ function getRelativeLabel(startDate: string) {
     return `In ${diffDays} days`;
 }
 
+/**
+ * Dashboard upcoming bookings component
+ * Displays preview of next three upcoming bookings
+ */
 export default function DashboardUpcoming({ items }: Props) {
     return (
         <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-4">

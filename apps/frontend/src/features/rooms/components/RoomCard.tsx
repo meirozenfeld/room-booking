@@ -6,6 +6,10 @@ type Props = {
     onBook: () => void;
 };
 
+/**
+ * Room card component
+ * Displays room information with booking button
+ */
 export default function RoomCard({ room, canBook, onBook }: Props) {
     return (
         <div className="bg-white rounded-2xl shadow hover:shadow-lg transition p-6 flex flex-col justify-between">

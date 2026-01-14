@@ -10,6 +10,10 @@ type Props = {
     onChange: () => void;
 };
 
+/**
+ * Booking card component
+ * Displays booking information with actions (reschedule, cancel)
+ */
 export default function BookingCard({ booking, onChange }: Props) {
     const { showToast } = useToast();
     const [loading, setLoading] = useState(false);
@@ -19,6 +23,9 @@ export default function BookingCard({ booking, onChange }: Props) {
     const isCancelled = booking.status === "CANCELLED";
     const isPast = new Date(booking.endDate) < new Date();
 
+    /**
+     * Handles booking cancellation
+     */
     async function confirmCancel() {
         try {
             setLoading(true);
@@ -66,12 +73,12 @@ export default function BookingCard({ booking, onChange }: Props) {
                 </span>
             </div>
 
-            {/* Dates */}
+            {/* Booking date range */}
             <div className="text-sm text-slate-700">
                 {formatDate(booking.startDate)} → {formatDate(booking.endDate)}
             </div>
 
-            {/* Cancelled message */}
+            {/* Status messages */}
             {isCancelled && (
                 <div className="text-sm text-slate-500 italic">
                     This booking was cancelled
@@ -83,7 +90,7 @@ export default function BookingCard({ booking, onChange }: Props) {
                 </div>
             )}
 
-            {/* Actions */}
+            {/* Action buttons - only shown for active upcoming bookings */}
             {!isCancelled && !isPast && (
                 <div className="flex items-center gap-2 pt-3">
                     <button

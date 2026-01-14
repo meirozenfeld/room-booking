@@ -1,6 +1,7 @@
 import { useState } from "react";
 import viewPassIcon from "../../../assets/icons/view_pass.png";
 import hidePassIcon from "../../../assets/icons/hide_pass.png";
+import logoTitle from "../../../assets/logo_title.png";
 
 type AuthFormProps = {
     title: string;
@@ -31,24 +32,29 @@ export function AuthForm({
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+        <div className="min-h-screen flex flex-col items-center justify-center gap-6 bg-gradient-to-br from-slate-100 to-slate-200">
+
+            {/* LOGO + TITLE (outside the card) */}
+            <div className="flex flex-col items-center gap-2">
+                <img
+                    src={logoTitle}
+                    alt="Room Check Point"
+                    className="h-25 object-contain"
+                />
+
+                <div className="text-sm text-slate-500">
+                    Secure room booking & access management
+                </div>
+            </div>
+
+            {/* CARD */}
             <form
                 onSubmit={onSubmit}
                 className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 animate-fade-in"
             >
-                <div className="text-center space-y-1">
-                    <div className="text-3xl font-bold text-slate-900">
-                        Room Check Point
-                    </div>
-                    <div className="text-sm text-slate-500">
-                        Secure room booking & access management
-                    </div>
-                </div>
-
                 <h2 className="text-xl font-semibold text-slate-800 text-center">
                     {title}
                 </h2>
-
 
                 {error && (
                     <div className="rounded-lg bg-red-50 text-red-700 px-4 py-3 text-sm">
@@ -87,19 +93,17 @@ export function AuthForm({
                             />
                         </button>
                     </div>
-
                 </div>
 
                 <button
                     type="submit"
                     disabled={isSubmitting}
                     className="w-full rounded-lg bg-slate-800 text-white py-2 font-medium
-               hover:bg-slate-700 transition
-               disabled:opacity-60 disabled:cursor-not-allowed"
+                        hover:bg-slate-700 transition
+                        disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                     {isSubmitting ? "Signing in..." : submitLabel}
                 </button>
-
 
                 {footer && (
                     <div className="text-center text-sm text-slate-600">
@@ -109,4 +113,5 @@ export function AuthForm({
             </form>
         </div>
     );
+
 }

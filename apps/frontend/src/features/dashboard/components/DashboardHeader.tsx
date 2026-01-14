@@ -15,10 +15,6 @@ export default function DashboardHeader({ greeting, name }: Props) {
                     alt="Room Check Point"
                     className="h-20 w-20 object-contain"
                 />
-
-                <h1 className="text-3xl font-bold text-slate-900">
-                    Room Check Point
-                </h1>
             </div>
 
             {/* Greeting */}

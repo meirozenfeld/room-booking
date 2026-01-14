@@ -1,11 +1,13 @@
 import { useAuth } from "../features/auth/AuthContext";
 import SidebarItem from "./SidebarItem";
 import { useEffect, useState } from "react";
-import logo from "../assets/logo.png";
+import logo_title from "../assets/logo_title.png";
 import dashboardIcon from "../assets/icons/dashboard.png";
 import findRoomsIcon from "../assets/icons/find_rooms.png";
 import myBookingsIcon from "../assets/icons/my_bookings.png";
 import logoutIcon from "../assets/icons/logout.png";
+import arrowLeft from "../assets/icons/arrow_left.png";
+import arrowRight from "../assets/icons/arrow_right.png";
 
 type Props = {
     isOpen: boolean;
@@ -39,31 +41,30 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
         >
 
             {/* Top */}
-            <div className="h-14 border-b border-slate-200 flex items-center px-2">
+            <div
+                className={`
+        h-14 border-b border-slate-200
+        flex items-center
+        ${isOpen ? "justify-between px-2" : "justify-center"}
+    `}
+            >
                 {isOpen ? (
-                    // OPEN: logo left, close button right
                     <div className="flex items-center justify-between w-full">
-                        <div className="flex items-center overflow-hidden">
+                        <div className="flex items-center gap-2 overflow-hidden">
                             <img
-                                src={logo}
+                                src={logo_title}
                                 alt="Room Check Point"
-                                className="h-11 w-11 object-contain"
+                                className="h-30 w-38 object-contain"
                             />
-
-                            {showText && <span className="font-semibold text-slate-800 whitespace-nowrap">
-                                Room Check Point
-                            </span>}
                         </div>
 
                         <ToggleButton isOpen={isOpen} onToggle={onToggle} />
                     </div>
                 ) : (
-                    // CLOSED: hamburger centered
-                    <div className="flex justify-center w-full">
-                        <ToggleButton isOpen={isOpen} onToggle={onToggle} />
-                    </div>
+                    <ToggleButton isOpen={isOpen} onToggle={onToggle} />
                 )}
             </div>
+
 
             {/* User */}
             {user && isOpen && (
@@ -132,30 +133,22 @@ function ToggleButton({
     return (
         <button
             onClick={onToggle}
-            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-slate-100 transition"
             aria-label="Toggle sidebar"
+            className="
+                w-9 h-9
+                flex items-center justify-center
+                rounded-md
+                hover:bg-slate-100
+                transition
+            "
         >
-            <div className="relative w-5 h-5">
-                <span
-                    className={`
-                        absolute h-0.5 w-5 bg-slate-700 transition-all duration-300
-                        ${isOpen ? "rotate-45 top-2.5" : "top-1"}
-                    `}
-                />
-                <span
-                    className={`
-                        absolute h-0.5 w-5 bg-slate-700 transition-all duration-300
-                        ${isOpen ? "opacity-0" : "top-2.5"}
-                    `}
-                />
-                <span
-                    className={`
-                        absolute h-0.5 w-5 bg-slate-700 transition-all duration-300
-                        ${isOpen ? "-rotate-45 top-2.5" : "top-4"}
-                    `}
-                />
-            </div>
+            <img
+                src={isOpen ? arrowLeft : arrowRight}
+                alt={isOpen ? "Collapse sidebar" : "Expand sidebar"}
+                className="w-5 h-5 object-contain"
+            />
         </button>
     );
 }
+
 

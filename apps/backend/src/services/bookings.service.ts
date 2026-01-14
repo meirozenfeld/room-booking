@@ -8,6 +8,9 @@ import {
     lockBookingForUpdate,
     findBookingById,
     cancelBooking,
+    listMyBookings,
+    findOverlappingConfirmedBookingExcluding,
+    updateBookingDates,
 } from "../repositories/booking.repo";
 import { logBookingAudit } from "../infra/observability/audit-logger";
 
@@ -24,6 +27,26 @@ export class BookingValidationError extends Error {
         this.name = "BookingValidationError";
     }
 }
+
+type ListMyBookingsInput = {
+    userId: string;
+    section?: "upcoming" | "past" | "cancelled";
+    search?: string;
+    startDate?: Date;
+    endDate?: Date;
+    minCapacity?: number;
+    sortBy?: "roomName" | "startDate" | "createdAt";
+    order?: "asc" | "desc";
+};
+
+
+type RescheduleBookingInput = {
+    bookingId: string;
+    requesterUserId: string;
+    requesterRole: string;
+    startDate: Date;
+    endDate: Date;
+};
 
 type CreateBookingInput = {
     userId: string;
@@ -110,6 +133,64 @@ export function createBookingService(prisma: PrismaClient) {
                 });
 
                 return booking;
+            });
+        },
+        async listMyBookings(input: ListMyBookingsInput & { page?: number; pageSize?: number }) {
+            return prisma.$transaction(async (tx) => {
+                return listMyBookings(tx, input.userId, input);
+            });
+        }
+        ,
+        async rescheduleBooking(input: RescheduleBookingInput) {
+            const { bookingId, requesterUserId, requesterRole, startDate, endDate } = input;
+
+            return prisma.$transaction(async (tx) => {
+                await lockBookingForUpdate(tx, bookingId);
+
+                const booking = await findBookingById(tx, bookingId);
+                if (!booking) throw new BookingNotFoundError();
+
+                const isAdmin = requesterRole === "ADMIN";
+                const isOwner = booking.userId === requesterUserId;
+                if (!isAdmin && !isOwner) throw new BookingForbiddenError("Not allowed to reschedule this booking");
+
+                if (booking.status !== BookingStatus.CONFIRMED) {
+                    throw new BookingValidationError("Only CONFIRMED bookings can be rescheduled");
+                }
+
+                if (!(startDate instanceof Date) || !(endDate instanceof Date) || startDate > endDate) {
+                    throw new BookingValidationError("Invalid date range");
+                }
+
+                await lockRoomForUpdate(tx, booking.roomId);
+
+                const active = await isRoomActive(tx, booking.roomId);
+                if (!active) throw new BookingValidationError("Room is inactive or does not exist");
+
+                const blocked = await hasBlockedAvailabilityInRange(tx, booking.roomId, startDate, endDate);
+                if (blocked) throw new BookingConflictError("Room is blocked for the requested dates");
+
+                const overlap = await findOverlappingConfirmedBookingExcluding(
+                    tx,
+                    booking.roomId,
+                    startDate,
+                    endDate,
+                    bookingId
+                );
+                if (overlap) throw new BookingConflictError();
+
+                const updated = await updateBookingDates(tx, bookingId, startDate, endDate);
+
+                await tx.auditEvent.create({
+                    data: {
+                        entity: "BOOKING",
+                        entityId: bookingId,
+                        action: "RESCHEDULED",
+                        metadata: { requesterUserId, requesterRole, startDate, endDate },
+                    },
+                });
+
+                return updated;
             });
         },
         async cancelBooking(input: CancelBookingInput) {

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createBooking, cancelBookingHandler } from "../controllers/booking.controller";
+import { createBooking, cancelBookingHandler, listMyBookingsHandler, rescheduleBookingHandler } from "../controllers/booking.controller";
 import { authMiddleware } from "../infra/auth-middleware";
 import { createBookingSchema } from "../infra/validate/booking.schemas";
 import { validate } from "../infra/validate";
@@ -12,7 +12,8 @@ router.post(
   validate(createBookingSchema),
   createBooking
 );
-
+router.get("/my", authMiddleware, listMyBookingsHandler);
+router.patch("/:id/reschedule", authMiddleware, rescheduleBookingHandler);
 router.patch(
   "/:id/cancel",
   authMiddleware,

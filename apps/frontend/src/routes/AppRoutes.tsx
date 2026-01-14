@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "../pages/LoginPage";
-import RegisterPage from "../pages/RegisterPage";
-import DashboardPage from "../pages/DashboardPage";
+import LoginPage from "../../src/features/auth/pages/LoginPage";
+import RegisterPage from "../../src/features/auth/pages/RegisterPage";
+import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
-import RoomsSearchPage from "../pages/RoomsSearchPage";
+import RoomsSearchPage from "../../src/features/rooms/pages/RoomsSearchPage";
+import MyBookingsPage from "../features/bookings/pages/MyBookingsPage";
 
 export default function AppRoutes() {
     return (
@@ -28,7 +29,14 @@ export default function AppRoutes() {
                         </ProtectedRoute>
                     }
                 />
-
+                <Route
+                    path="/bookings"
+                    element={
+                        <ProtectedRoute>
+                            <MyBookingsPage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="*" element={<Navigate to="/" />} />
             </Routes>
         </BrowserRouter>

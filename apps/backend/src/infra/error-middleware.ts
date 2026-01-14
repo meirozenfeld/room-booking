@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "./app-error";
 import { logger } from "./logger";
 import { httpErrorsTotal } from "./observability/metrics";
+import { ZodError } from "zod";
 
 /**
  * Global error handler middleware.
@@ -14,6 +15,25 @@ export function errorMiddleware(
     res: Response,
     _next: NextFunction
 ) {
+    // ✅ Zod validation errors (robust detection)
+    if (
+        err instanceof ZodError ||
+        (err as any)?.name === "ZodError" ||
+        Array.isArray((err as any)?.issues)
+    ) {
+        httpErrorsTotal.inc({
+            route: _req.originalUrl || "unknown",
+            type: "ZodError",
+        });
+
+        return res.status(400).json({
+            error:
+                (err as any)?.issues?.[0]?.message ??
+                "Invalid request data",
+        });
+    }
+
+    // ✅ Known application errors
     if (err instanceof AppError) {
         httpErrorsTotal.inc({
             route: _req.originalUrl || "unknown",
@@ -33,9 +53,11 @@ export function errorMiddleware(
         });
     }
 
+    // ❌ Unexpected errors → 500
     logger.error({ err }, "Unexpected error");
 
     return res.status(500).json({
         error: "Internal server error",
     });
 }
+

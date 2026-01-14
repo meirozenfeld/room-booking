@@ -43,10 +43,10 @@ export async function searchRooms(params: SearchRoomsParams) {
                     not: BookingStatus.CANCELLED,
                 },
                 startDate: {
-                    lt: endDate,
+                    lte: endDate,
                 },
                 endDate: {
-                    gt: startDate,
+                    gte: startDate,
                 },
             },
         };

@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "../features/auth/AuthContext";
 import type { ReactNode } from "react";
+import AppLayout from "../layout/AppLayout";
 
 export default function ProtectedRoute({
     children,
@@ -10,12 +11,16 @@ export default function ProtectedRoute({
     const { accessToken, isInitializing } = useAuth();
 
     if (isInitializing) {
-        return <div>Loading...</div>; // או spinner
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                Loading...
+            </div>
+        );
     }
 
     if (!accessToken) {
         return <Navigate to="/login" replace />;
     }
 
-    return <>{children}</>;
+    return <AppLayout>{children}</AppLayout>;
 }

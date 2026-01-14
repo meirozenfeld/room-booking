@@ -7,18 +7,20 @@ import cors from "cors";
 import { requestIdMiddleware } from "./infra/request-id";
 import { errorMiddleware } from "./infra/error-middleware";
 import { healthHandler } from "./infra/health";
-import pingRouter from "./api/ping.routes";
 import { requestLogger } from "./infra/request-logger";
-import authRouter from "./api/auth.routes";
 import { authRateLimiter } from "./infra/rate-limit";
-import usersRouter from "./api/users.routes";
-import adminRouter from "./api/admin.routes";
-import roomsRouter from "./api/rooms.routes";
-import bookingsRoutes from "./api/bookings.routes";
 import { metricsMiddleware } from "./infra/observability/metrics-middleware";
 import { metricsHandler } from "./infra/observability/metrics-route";
 import { AppError } from "./infra/app-error";
 import { checkReadiness } from "./infra/ready";
+import pingRouter from "./api/ping.routes";
+import authRouter from "./api/auth.routes";
+import usersRouter from "./api/users.routes";
+import adminRouter from "./api/admin.routes";
+import dashboardRoutes from "./api/dashboard.routes";
+import roomsRouter from "./api/rooms.routes";
+import bookingsRoutes from "./api/bookings.routes";
+
 
 dotenv.config();
 
@@ -32,6 +34,7 @@ app.use(
     })
 );
 app.use(express.json());
+app.options("/api/auth/*", cors());
 app.use(requestIdMiddleware);
 app.use(requestLogger);
 app.use(metricsMiddleware);
@@ -53,6 +56,7 @@ app.use("/api", pingRouter);
 app.use("/api/auth", authRateLimiter, authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/rooms", roomsRouter);
 app.use("/bookings", bookingsRoutes);
 

@@ -1,5 +1,10 @@
 import { env } from "../config/env";
 
+export type ApiError = {
+    status: number;
+    message: string;
+};
+
 let accessToken: string | null = null;
 
 export function setAccessToken(token: string | null) {
@@ -22,32 +27,53 @@ export async function apiFetch(
         headers.Authorization = `Bearer ${token}`;
     }
 
+    let res: Response;
 
-    const res = await fetch(`${env.apiBaseUrl}${path}`, {
-        ...options,
-        headers,
-    });
-
-    if (!res.ok) {
-        // נסה JSON, ואם אין – זרוק שגיאה כללית
-        const text = await res.text();
-        try {
-            throw JSON.parse(text);
-        } catch {
-            throw new Error(text || "Request failed");
-        }
+    try {
+        res = await fetch(`${env.apiBaseUrl}${path}`, {
+            ...options,
+            headers,
+        });
+    } catch {
+        throw {
+            status: 0,
+            message: "Network error. Please try again.",
+        } satisfies ApiError;
     }
 
-    // 🔴 כאן התיקון
+    // ❌ שגיאה מהשרת
+    if (!res.ok) {
+        let message = "Request failed";
+
+        try {
+            const data = await res.json();
+            message =
+                data?.message ||
+                data?.error ||
+                message;
+        } catch {
+            // fallback לטקסט
+            const text = await res.text();
+            if (text) message = text;
+        }
+
+        throw {
+            status: res.status,
+            message,
+        } satisfies ApiError;
+    }
+
+    // 204 No Content
     if (res.status === 204) {
         return null;
     }
 
     const contentType = res.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
+    if (contentType?.includes("application/json")) {
         return res.json();
     }
 
     return res.text();
 }
+
 

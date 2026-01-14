@@ -8,6 +8,7 @@ import {
     type JwtPayload,
 } from "./jwt";
 import { env } from "../../config/env";
+import { AppError } from "../../infra/app-error";
 
 /**
  * Parses refresh token expiry string to Date object.
@@ -48,10 +49,9 @@ export class AuthService {
     static async register(email: string, password: string) {
         const existing = await UserRepo.findByEmail(email);
         if (existing) {
-            return {
-                message: "Email already in use",
-            };
+            throw new AppError("Email already in use", 409);
         }
+
 
         const passwordHash = await hashPassword(password);
         const user = await UserRepo.create(email, passwordHash);

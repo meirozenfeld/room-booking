@@ -26,8 +26,8 @@ export async function findOverlappingConfirmedBooking(
         where: {
             roomId,
             status: BookingStatus.CONFIRMED,
-            startDate: { lt: endDate },
-            endDate: { gt: startDate },
+            startDate: { lte: endDate },
+            endDate: { gte: startDate },
         },
         select: { id: true },
     });
@@ -254,8 +254,8 @@ export async function findOverlappingConfirmedBookingExcluding(
             roomId,
             status: BookingStatus.CONFIRMED,
             id: { not: excludeBookingId },
-            startDate: { lt: endDate },
-            endDate: { gt: startDate },
+            startDate: { lte: endDate },
+            endDate: { gte: startDate },
         },
         select: { id: true },
     });

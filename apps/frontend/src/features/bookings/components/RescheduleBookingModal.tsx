@@ -37,10 +37,24 @@ export default function RescheduleBookingModal({
      * Validates and saves new booking dates
      */
     async function handleSave() {
-        if (!startDate || !endDate || startDate > endDate) {
-            showToast("Invalid date range", "error");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (!startDate || !endDate) {
+            showToast("Please select both start and end dates", "error");
             return;
         }
+
+        if (new Date(startDate) < today) {
+            showToast("Start date cannot be in the past", "error");
+            return;
+        }
+
+        if (endDate < startDate) {
+            showToast("End date must be after start date", "error");
+            return;
+        }
+
 
         try {
             setLoading(true);

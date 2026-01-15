@@ -26,30 +26,40 @@ export function useRoomsSearch() {
             // Validate date inputs
             if (startDate && !endDate) {
                 setError("Please select an end date");
-                setRooms([]);      
-                setHasNext(false); 
+                setRooms([]);
+                setHasNext(false);
                 return;
             }
 
             if (endDate && !startDate) {
                 setError("Please select a start date");
-                setRooms([]);      
-                setHasNext(false); 
+                setRooms([]);
+                setHasNext(false);
                 return;
             }
 
             if (startDate && endDate && endDate < startDate) {
                 setError("End date must be after start date");
-                setRooms([]);      
-                setHasNext(false); 
+                setRooms([]);
+                setHasNext(false);
+                return;
+            }
+            // Prevent searching rooms in the past
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (startDate && new Date(startDate) < today) {
+                setError("Start date cannot be in the past");
+                setRooms([]);
+                setHasNext(false);
                 return;
             }
 
             // Validate capacity
             if (capacity !== undefined && capacity < 1) {
                 setError("Capacity must be at least 1");
-                setRooms([]);      
-                setHasNext(false); 
+                setRooms([]);
+                setHasNext(false);
                 return;
             }
 

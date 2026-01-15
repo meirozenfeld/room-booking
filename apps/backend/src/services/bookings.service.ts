@@ -87,6 +87,21 @@ export function createBookingService(prisma: PrismaClient) {
     return {
         async createBooking(input: CreateBookingInput) {
             const { userId, roomId, startDate, endDate } = input;
+            // ---- Date validation: prevent bookings in the past ----
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (startDate < today) {
+                throw new BookingValidationError(
+                    "Cannot create a booking in the past"
+                );
+            }
+
+            if (endDate < startDate) {
+                throw new BookingValidationError(
+                    "End date must be after start date"
+                );
+            }
 
             logBookingAudit({
                 event: "booking_attempt",
@@ -158,9 +173,27 @@ export function createBookingService(prisma: PrismaClient) {
                     throw new BookingValidationError("Only CONFIRMED bookings can be rescheduled");
                 }
 
-                if (!(startDate instanceof Date) || !(endDate instanceof Date) || startDate > endDate) {
-                    throw new BookingValidationError("Invalid date range");
+                // ---- Date validation: prevent rescheduling into the past ----
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (!(startDate instanceof Date) || !(endDate instanceof Date)) {
+                    throw new BookingValidationError("Invalid date values");
                 }
+
+                if (startDate < today) {
+                    throw new BookingValidationError(
+                        "Cannot reschedule a booking to the past"
+                    );
+                }
+
+                if (endDate < startDate) {
+                    throw new BookingValidationError(
+                        "End date must be after start date"
+                    );
+                }
+                // ------------------------------------------------------------
+
 
                 await lockRoomForUpdate(tx, booking.roomId);
 

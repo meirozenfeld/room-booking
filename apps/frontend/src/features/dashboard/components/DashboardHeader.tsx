@@ -1,5 +1,3 @@
-import title from "../../../assets/title.png";
-
 type Props = {
     greeting: string;
     name: string;
@@ -15,10 +13,11 @@ export default function DashboardHeader({ greeting, name }: Props) {
             {/* App identity */}
             <div className="flex items-center gap-2">
                 <img
-                    src={title}
+                    src="/title.png"
                     alt="Room Check Point"
                     className="h-20 w-80 object-contain"
                 />
+
             </div>
 
             {/* Greeting */}

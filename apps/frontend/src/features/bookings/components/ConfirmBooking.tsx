@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createBooking } from "../../../../src/api/bookings.api";
 import ConfirmBookingSkeleton from "./ConfirmBookingSkeleton";
 import { formatDate } from "../../../utils/date";

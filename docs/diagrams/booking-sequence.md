@@ -8,9 +8,14 @@ sequenceDiagram
 
     Client->>API: POST /bookings
     API->>DB: BEGIN TRANSACTION
-    API->>DB: Lock Room (FOR UPDATE)
-    API->>DB: Check room active & availability
+    API->>DB: Validate room exists and is active
     API->>DB: Check overlapping bookings (exclusive end-date logic)
-    API->>DB: INSERT booking (CONFIRMED)
-    API->>DB: COMMIT
-    API-->>Client: 201 Created
+    alt Overlapping booking exists
+        API->>DB: ROLLBACK
+        API-->>Client: 409 Conflict
+    else No overlap
+        API->>DB: INSERT booking (CONFIRMED)
+        API->>DB: COMMIT
+        API-->>Client: 201 Created
+    end
+

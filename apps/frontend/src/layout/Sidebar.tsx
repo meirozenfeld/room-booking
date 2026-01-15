@@ -5,6 +5,8 @@ import logo_title from "../assets/logo_title.png";
 import dashboardIcon from "../assets/icons/dashboard.png";
 import findRoomsIcon from "../assets/icons/find_rooms.png";
 import myBookingsIcon from "../assets/icons/my_bookings.png";
+import manageRoomsIcon from "../assets/icons/manage_rooms.png";
+import allBookingsIcon from "../assets/icons/all_bookings.png";
 import logoutIcon from "../assets/icons/logout.png";
 import arrowLeft from "../assets/icons/arrow_left.png";
 import arrowRight from "../assets/icons/arrow_right.png";
@@ -22,6 +24,7 @@ type Props = {
 export default function Sidebar({ isOpen, onToggle }: Props) {
     const { user, logout } = useAuth();
     const [showText, setShowText] = useState(isOpen);
+    const isAdmin = user?.role === "ADMIN";
 
     // Delay text visibility for smooth animation when opening
     useEffect(() => {
@@ -101,6 +104,27 @@ export default function Sidebar({ isOpen, onToggle }: Props) {
                     icon={myBookingsIcon}
                     isOpen={isOpen}
                 />
+                {isAdmin && (
+                    <>
+                        <div className="pt-4 mt-4 border-t border-slate-200 text-xs text-slate-400 px-3">
+                            Admin
+                        </div>
+
+                        <SidebarItem
+                            to="/admin/rooms"
+                            label="Manage rooms"
+                            icon={manageRoomsIcon}
+                            isOpen={isOpen}
+                        />
+
+                        <SidebarItem
+                            to="/admin/bookings"
+                            label="All bookings"
+                            icon={allBookingsIcon}
+                            isOpen={isOpen}
+                        />
+                    </>
+                )}
 
             </nav>
 

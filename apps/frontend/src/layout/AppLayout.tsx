@@ -19,13 +19,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     }, [sidebarOpen]);
 
     return (
-        <div className="min-h-screen bg-slate-100 flex">
+        <div className="h-screen bg-slate-100 flex overflow-hidden">
             <Sidebar
                 isOpen={sidebarOpen}
                 onToggle={() => setSidebarOpen((v) => !v)}
             />
 
-            {/* Mobile overlay - closes sidebar when clicked */}
+            {/* Mobile overlay */}
             {sidebarOpen && (
                 <div
                     onClick={() => setSidebarOpen(false)}
@@ -35,7 +35,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
             <main
                 className={`
-                    flex-1 transition-all duration-300
+                    flex-1
+                    overflow-y-auto
+                    transition-all duration-300
                     p-6
                     md:${sidebarOpen ? "ml-64" : "ml-16"}
                 `}
@@ -44,4 +46,5 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </main>
         </div>
     );
+
 }

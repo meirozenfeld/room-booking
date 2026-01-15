@@ -9,6 +9,19 @@ Room availability is computed dynamically at query time using
 database-level filtering, without precomputed availability tables
 or locking mechanisms.
 
+## Scope Separation
+
+Room search is strictly a **read-only, end-user flow**.
+
+Administrative room management (create, update, activate/deactivate)
+is handled through separate admin endpoints and does not reuse
+the room search logic.
+
+This separation ensures:
+- Clear distinction between read-heavy and write-heavy operations
+- Simpler reasoning about consistency guarantees
+- Independent evolution of search and administrative functionality
+
 ## Availability Logic
 A room is considered unavailable if there exists at least one booking such that:
 - booking.startDate < requestedEndDate

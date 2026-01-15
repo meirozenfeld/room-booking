@@ -1,4 +1,4 @@
-import logo from "../../../assets/logo.png";
+import title from "../../../assets/title.png";
 
 type Props = {
     greeting: string;
@@ -13,11 +13,11 @@ export default function DashboardHeader({ greeting, name }: Props) {
     return (
         <div className="space-y-3">
             {/* App identity */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
                 <img
-                    src={logo}
+                    src={title}
                     alt="Room Check Point"
-                    className="h-20 w-20 object-contain"
+                    className="h-20 w-80 object-contain"
                 />
             </div>
 

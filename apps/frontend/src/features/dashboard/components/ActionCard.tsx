@@ -19,8 +19,10 @@ export default function ActionCard({ title, description, icon, to }: Props) {
                 group rounded-xl border border-slate-200 bg-white p-6
                 hover:border-slate-300 hover:shadow-md
                 transition-all
+                flex items-center justify-between
             "
         >
+            {/* Left side */}
             <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-lg bg-slate-100 flex items-center justify-center">
                     <img
@@ -39,6 +41,17 @@ export default function ActionCard({ title, description, icon, to }: Props) {
                     </p>
                 </div>
             </div>
+
+            {/* Right arrow */}
+            <span
+                className="
+                    text-slate-400 text-xl
+                    transition-transform
+                    group-hover:translate-x-1
+                "
+            >
+                →
+            </span>
         </Link>
     );
 }

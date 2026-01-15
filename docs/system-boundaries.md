@@ -18,9 +18,12 @@ Clearly defining system boundaries ensures a focused MVP, prevents unnecessary c
 ### Room Management
 - Create rooms (admin only)
 - Update room details
-- Delete rooms (admin only)
+- Deactivate rooms (admin only, soft-deletion)
 - List and search rooms
 - Filter rooms by basic attributes (e.g., capacity, location, price)
+
+Rooms are never physically deleted.
+Deactivation preserves historical booking integrity and auditability.
 
 ### Booking Management
 - Create a booking for a room

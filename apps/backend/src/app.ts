@@ -16,7 +16,7 @@ import { checkReadiness } from "./infra/ready";
 import pingRouter from "./api/ping.routes";
 import authRouter from "./api/auth.routes";
 import usersRouter from "./api/users.routes";
-import adminRouter from "./api/admin.routes";
+import adminRouter from "./api/admin/admin.routes";
 import dashboardRoutes from "./api/dashboard.routes";
 import roomsRouter from "./api/rooms.routes";
 import bookingsRoutes from "./api/bookings.routes";

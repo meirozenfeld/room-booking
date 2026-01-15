@@ -6,6 +6,8 @@ import DashboardUpcoming from "../components/DashboardUpcoming";
 import DashboardSkeleton from "../components/DashboardSkeleton";
 import totalIcon from "../../../assets/icons/total_bookings.png";
 import upcomingIcon from "../../../assets/icons/uncoming_bookings.png";
+import { useAuth } from "../../auth/AuthContext";
+import AdminSection from "../Admin/components/AdminSection";
 
 /**
  * Dashboard page component
@@ -13,18 +15,23 @@ import upcomingIcon from "../../../assets/icons/uncoming_bookings.png";
  */
 export default function DashboardPage() {
     const { greeting, name, stats, upcomingPreview, loading } = useDashboard();
+    const { user } = useAuth();
+    const isAdmin = user?.role === "ADMIN";
+
     if (loading) {
         return <DashboardSkeleton />;
     }
     return (
         <div className="max-w-6xl mx-auto space-y-10">
+            {/*USER SECTION */}
             <DashboardHeader greeting={greeting} name={name} />
-
+            <h2 className="text-lg font-semibold">Personal overview</h2>
             <DashboardStats total={stats.total} upcoming={stats.upcoming} totalIcon={totalIcon} upcomingIcon={upcomingIcon} />
-
             <DashboardUpcoming items={upcomingPreview} />
-
             <DashboardActions />
+
+            {/* ADMIN EXTENSION */}
+            {isAdmin && <AdminSection />}
         </div>
     );
 }

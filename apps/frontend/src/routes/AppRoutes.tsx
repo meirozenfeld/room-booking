@@ -5,6 +5,9 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
 import RoomsSearchPage from "../../src/features/rooms/pages/RoomsSearchPage";
 import MyBookingsPage from "../features/bookings/pages/MyBookingsPage";
+import AdminRoute from "./AdminRoute";
+import AdminRoomsPage from "../features/admin/pages/AdminRoomsPage";
+import AdminBookingsPage from "../features/admin/pages/AdminBookingsPage";
 
 /**
  * Application routing configuration
@@ -39,6 +42,23 @@ export default function AppRoutes() {
                         <ProtectedRoute>
                             <MyBookingsPage />
                         </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/rooms"
+                    element={
+                        <AdminRoute>
+                            <AdminRoomsPage />
+                        </AdminRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/bookings"
+                    element={
+                        <AdminRoute>
+                            <AdminBookingsPage />
+                        </AdminRoute>
                     }
                 />
                 <Route path="*" element={<Navigate to="/" />} />

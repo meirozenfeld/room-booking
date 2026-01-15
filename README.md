@@ -23,11 +23,11 @@ development practices rather than a toy implementation.
 - **Backend**: Node.js + Express + TypeScript
 - **Frontend**: React + TypeScript (client-side rendered, modular feature-based structure)
 - **Database**: PostgreSQL (via Prisma ORM)  
-- **Authentication**: JWT (Access + Refresh Tokens)  
+- **Authentication**: JWT (Access + Refresh Tokens)
+- **Authorization**: Role-based access control (USER / ADMIN)
 - **Security**: Password hashing, rate limiting, role-based access control  
 - **DevOps**: Docker (system-level local orchestration via Docker Compose),
   production-like backend container, environment-based configuration
-  nment-based configuration  
 
 High-level architecture and diagrams are available under `/docs`.
 
@@ -166,7 +166,14 @@ The system uses a secure, production-oriented authentication model:
 - `GET /api/users/me` (authenticated)
 
 ### Admin
-- `GET /api/admin/users` (ADMIN only)
+(All endpoints require ADMIN role)
+- `GET /api/admin/users`
+- `GET /api/admin/rooms`
+- `POST /api/admin/rooms`
+- `PATCH /api/admin/rooms/:id`
+- `PATCH /api/admin/rooms/:id/toggle`
+- `GET /api/admin/bookings`
+- `PATCH /api/admin/bookings/:id/cancel`
 
 ### Rooms
 - `GET /api/rooms/search` (read-heavy, paginated)
@@ -185,7 +192,9 @@ The system uses a secure, production-oriented authentication model:
 The frontend is implemented using **React + TypeScript** and focuses on correctness,
 clarity, and alignment with backend consistency guarantees.
 
-### Key Characteristics
+### User Experience
+
+#### Key Characteristics
 
 - Token-based authentication using JWT access tokens
 - Protected routes with explicit authentication guards
@@ -197,8 +206,21 @@ clarity, and alignment with backend consistency guarantees.
 - Server-driven pagination per section
 - Explicit reload after mutating operations (cancel / reschedule)
 
-The frontend intentionally avoids complex state management or heavy UI frameworks,
-keeping the focus on system behavior rather than presentation.
+### Admin Experience
+
+The administrative interface provides operational control over the system
+and is intentionally designed as a **non-optimistic, explicit control surface**.
+
+- Dedicated admin dashboard
+- Role-protected admin routes
+- Room management (create, update, activate/deactivate)
+- Global bookings view with filtering and status inspection
+- Explicit confirmation dialogs for destructive operations
+- No optimistic UI for administrative actions
+- All mutations trigger an explicit data reload
+
+This separation ensures that administrative actions remain predictable,
+auditable, and consistent with backend guarantees.
 
 ---
 
@@ -224,6 +246,10 @@ ER diagrams are available under `/docs`.
 
 Bookings follow a simple lifecycle model (CONFIRMED → CANCELLED).
 Intermediate states such as PENDING are intentionally reserved for future extensions.
+
+Rooms are never physically deleted.
+Administrative deletion is implemented as a soft-deactivation (`isActive = false`)
+to preserve historical booking integrity and auditability.
 
 ---
 
@@ -448,6 +474,8 @@ This project intentionally prioritizes:
 
 - Advanced features (caching, concurrency control, observability, deployment)
   are introduced gradually in later phases.
+
+- Clear separation between end-user flows and administrative control surfaces
 
 - Simple, explicit domain models over unused intermediate states
 
